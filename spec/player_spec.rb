@@ -20,8 +20,8 @@ describe Player do
   # validates that the entered move fits on the gameboard.
   # ie. no overflowing columns
   describe '#overflown_column?' do
-    subject(:player_overflow) { described_class.new }
-    let(:gameboard) { double(Gameboard) }
+    subject(:player_overflow) { described_class.new(gameboard) }
+    let(:gameboard) { instance_double(Gameboard) }
 
     context 'when a player enters a move to an empty column' do
       before do
@@ -29,9 +29,12 @@ describe Player do
         allow(gameboard).to receive(:board_state).and_return(empty_board)
       end
 
-      it 'returns true' do
-        player_input = 3
-        expect (player_overflow.overflown_column?(player_input)).to be true
+      7.times do |player_input|
+        it 'returns true' do
+          return_value = player_overflow.overflown_column?(player_input)
+          p return_value
+          expect(return_value).to be true
+        end
       end
     end
 
@@ -42,13 +45,15 @@ describe Player do
       end
       it 'returns false' do
         player_input = 3
-        expect (player_overflow.overflown_column?(player_input)).to be false
+        return_value = player_overflow.overflown_column?(player_input)
+        expect(return_value).to be false
       end
     end
   end
 
   describe '#get_input' do
-    subject(:player_input) {described_class.new}
+    subject(:player_input) { described_class.new(gameboard) }
+    let(:gameboard) { instance_double(Gameboard) }
 
     context 'when given a question phrase to print' do
       before do
