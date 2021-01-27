@@ -4,13 +4,21 @@
 class Player
   @@players = Set.new
 
-  def initialize(name = "Player #{@@players.count + 1}")
+  def initialize(gameboard, name = "Player #{@@players.count + 1}")
     @name = name
+    @gameboard = gameboard
     @@players << self
     @player_number = @@players.count
   end
 
   attr_reader :name, :player_number
+
+  # checks to see if the inputted column is already full
+  # columns start at 0.
+  def overflown_column?(column)
+    game_state = @gameboard.board_state
+    game_state[column].length < 6
+  end
 
   # generic input validation
   def get_input(question_to_display, valid_characters = %w[Y N])
@@ -24,4 +32,5 @@ class Player
     end
     input
   end
+
 end
