@@ -14,7 +14,51 @@ describe Player do
 
   # adds player input move to gameboard
   describe '#make_move' do
+    subject(:player_move) { described_class.new(gameboard) }
+    let(:gameboard) { instance_double(Gameboard) }
 
+    before(:each) do
+      allow(player_move).to receive(:get_input).and_return('1')
+      allow(gameboard).to receive(:add_move)
+    end
+
+    context 'when players enters a valid move' do
+      before do
+        allow(player_move).to receive(:overflown_column?).and_return(true)
+      end
+
+      it 'gets an input from the user' do
+        expect(player_move).to receive(:get_input).once
+        player_move.make_move
+      end
+
+      it 'checks for column overflow' do
+        expect(player_move).to receive(:overflown_column?).with(0).once
+        player_move.make_move
+      end
+
+      it 'adds it to the gameboard' do
+        player_number = player_move.player_number
+        expect(gameboard).to receive(:add_move).with(player_number, 0).once
+        player_move.make_move
+      end
+    end
+
+    context 'when the player enters an invalid move' do
+      before do
+        allow(player_move).to receive(:overflown_column?).and_return(false, false, true)
+      end
+
+      it 'does not add it to the gameboard' do
+        expect(gameboard).to receive(:add_move).once
+        player_move.make_move
+      end
+
+      it 'asks the user to enter a valid move' do
+        expect(player_move).to receive(:get_input).exactly(3).times
+        player_move.make_move
+      end
+    end
   end
 
   # validates that the entered move fits on the gameboard.
@@ -32,7 +76,6 @@ describe Player do
       7.times do |player_input|
         it 'returns true' do
           return_value = player_overflow.overflown_column?(player_input)
-          p return_value
           expect(return_value).to be true
         end
       end
@@ -74,7 +117,7 @@ describe Player do
         allow(player_input).to receive(:gets).and_return(valid_input)
       end
 
-      it 'should return the valid input' do
+      it 'returns the valid input' do
         expect(player_input.get_input('')).to eq(valid_input)
       end
     end
@@ -90,8 +133,4 @@ describe Player do
       end
     end
   end
-
-
-
-
 end
