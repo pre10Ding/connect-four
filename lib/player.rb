@@ -13,6 +13,18 @@ class Player
 
   attr_reader :name, :player_number
 
+  def make_move
+    prompt_phrase = "#{name}, please pick a column."
+    valid_characters = %w[1 2 3 4 5 6 7]
+    column = nil
+    loop do
+      player_input = get_input(prompt_phrase, valid_characters)
+      column = player_input.to_i - 1
+      break if overflown_column?(column)
+    end
+    @gameboard.add_move(@player_number, column)
+  end
+
   # checks to see if the inputted column is already full
   # columns start at 0.
   def overflown_column?(column)
@@ -32,5 +44,4 @@ class Player
     end
     input
   end
-
 end
