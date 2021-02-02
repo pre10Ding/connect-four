@@ -4,31 +4,30 @@
 class Player
   @@players = Set.new
 
-  def initialize(gameboard, name = "Player #{@@players.count + 1}")
+  def initialize(name = "Player #{@@players.count + 1}")
     @name = name
-    @gameboard = gameboard
     @@players << self
     @player_number = @@players.count
   end
 
   attr_reader :name, :player_number
 
-  def make_move
+  def make_move(gameboard)
     prompt_phrase = "#{name}, please pick a column."
     valid_characters = %w[1 2 3 4 5 6 7]
     column = nil
     loop do
       player_input = get_input(prompt_phrase, valid_characters)
       column = player_input.to_i - 1
-      break if overflown_column?(column)
+      break if overflown_column?(column, gameboard)
     end
-    @gameboard.add_move(@player_number, column)
+    gameboard.add_move(@player_number, column)
   end
 
   # checks to see if the inputted column is already full
-  # columns start at 0.
-  def overflown_column?(column)
-    game_state = @gameboard.board_state
+  # - should this method belong to Gameboard class?
+  def overflown_column?(column, gameboard)
+    game_state = gameboard.board_state
     game_state[column].length < 6
   end
 
