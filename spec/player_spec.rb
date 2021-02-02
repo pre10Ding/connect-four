@@ -14,7 +14,7 @@ describe Player do
 
   # adds player input move to gameboard
   describe '#make_move' do
-    subject(:player_move) { described_class.new(gameboard) }
+    subject(:player_move) { described_class.new }
     let(:gameboard) { instance_double(Gameboard) }
 
     before(:each) do
@@ -29,18 +29,18 @@ describe Player do
 
       it 'gets an input from the user' do
         expect(player_move).to receive(:get_input).once
-        player_move.make_move
+        player_move.make_move(gameboard)
       end
 
       it 'checks for column overflow' do
-        expect(player_move).to receive(:overflown_column?).with(0).once
-        player_move.make_move
+        expect(player_move).to receive(:overflown_column?).with(0, gameboard).once
+        player_move.make_move(gameboard)
       end
 
       it 'adds it to the gameboard' do
         player_number = player_move.player_number
         expect(gameboard).to receive(:add_move).with(player_number, 0).once
-        player_move.make_move
+        player_move.make_move(gameboard)
       end
     end
 
@@ -51,12 +51,12 @@ describe Player do
 
       it 'does not add it to the gameboard' do
         expect(gameboard).to receive(:add_move).once
-        player_move.make_move
+        player_move.make_move(gameboard)
       end
 
       it 'asks the user to enter a valid move' do
         expect(player_move).to receive(:get_input).exactly(3).times
-        player_move.make_move
+        player_move.make_move(gameboard)
       end
     end
   end
@@ -64,7 +64,7 @@ describe Player do
   # validates that the entered move fits on the gameboard.
   # ie. no overflowing columns
   describe '#overflown_column?' do
-    subject(:player_overflow) { described_class.new(gameboard) }
+    subject(:player_overflow) { described_class.new }
     let(:gameboard) { instance_double(Gameboard) }
 
     context 'when a player enters a move to an empty column' do
@@ -75,7 +75,7 @@ describe Player do
 
       7.times do |player_input|
         it 'returns true' do
-          return_value = player_overflow.overflown_column?(player_input)
+          return_value = player_overflow.overflown_column?(player_input, gameboard)
           expect(return_value).to be true
         end
       end
@@ -88,14 +88,14 @@ describe Player do
       end
       it 'returns false' do
         player_input = 3
-        return_value = player_overflow.overflown_column?(player_input)
+        return_value = player_overflow.overflown_column?(player_input, gameboard)
         expect(return_value).to be false
       end
     end
   end
 
   describe '#get_input' do
-    subject(:player_input) { described_class.new(gameboard) }
+    subject(:player_input) { described_class.new }
     let(:gameboard) { instance_double(Gameboard) }
 
     context 'when given a question phrase to print' do
@@ -132,5 +132,12 @@ describe Player do
         expect(player_input.get_input(''))
       end
     end
+
+    context 'when the player enters SAVE or save' do
+      it 'triggers the gameboard\'s save function' do
+        expect(gameboard).to receive(:save_gameboard).once
+      end
+    end
   end
+
 end
